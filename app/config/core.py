@@ -4,6 +4,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+API_VERSION = 'api/v1/'
+COMPANIES_LINK = API_VERSION + 'companies'
+COMPANY_LINK = COMPANIES_LINK + '/{company_id}'
+PRODUCTS_LINK = COMPANY_LINK + '/products'
+PRODUCT_LINK = PRODUCTS_LINK + '/{product_id}'
+
 POSTGRES_USER = os.getenv('POSTGRES_USER')
 POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
 POSTGRES_HOST = os.getenv('POSTGRES_HOST')

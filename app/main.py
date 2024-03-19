@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from .routers.company import company_router
+from .routers.product import product_router
 
 description = '''
 # Companies and products management app
@@ -11,3 +12,4 @@ app = FastAPI()
 
 
 app.include_router(company_router)
+app.include_router(product_router)

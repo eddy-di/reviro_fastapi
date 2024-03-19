@@ -18,6 +18,14 @@ class ProductCreate(ProductBase):
     pass
 
 
+class ProductUpdate(ProductBase):
+    name: str | None = None
+    description: str | None = None
+    price: Decimal | None = None
+    discount: int = Field(default=0, ge=0, lt=100)
+    quantity: int = Field(default=0, ge=0)
+
+
 class Product(ProductBase):
     id: int
 
