@@ -1,10 +1,11 @@
-from pydantic import BaseModel, Field
 from datetime import datetime
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import Decimal
+
+from pydantic import BaseModel, Field
 
 
 class ProductBase(BaseModel):
-    name: str
+    name: str | None
     description: str | None
     created_at: datetime
     updated_at: datetime

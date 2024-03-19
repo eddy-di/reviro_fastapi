@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Text, Time, Enum
-from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
+
+from sqlalchemy import Column, Enum, Integer, String, Text, Time
+from sqlalchemy.orm import relationship
 
 from app.config.database import Base
 

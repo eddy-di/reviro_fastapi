@@ -1,11 +1,10 @@
 from fastapi import HTTPException
 
-from app.services.root import DatabaseCRUD
-from app.schemas.product import ProductCreate, ProductUpdate
-from app.models.product import Product
 from app.models.company import Company
+from app.models.product import Product
+from app.schemas.product import ProductCreate, ProductUpdate
 from app.services.database.company import not_found_exception as no_company
-
+from app.services.root import DatabaseCRUD
 
 
 def not_found_exception() -> HTTPException:
@@ -22,9 +21,9 @@ class ProductCRUD(DatabaseCRUD):
         if not result:
             return no_company()
         return None
-    
+
     def get_products(self, company_id: int, skip: int, limit: int) -> list[Product] | HTTPException:
-        
+
         self.check_company_id(company_id=company_id)
 
         products = (
@@ -34,11 +33,11 @@ class ProductCRUD(DatabaseCRUD):
             .limit(limit)
             .all()
         )
-        
+
         return products
-    
+
     def create_product(self, company_id: int, schema: ProductCreate) -> Product:
-        
+
         self.check_company_id(company_id=company_id)
 
         new_product = Product(
@@ -51,15 +50,15 @@ class ProductCRUD(DatabaseCRUD):
             quantity=schema.quantity,
             company_id=company_id
         )
-        
+
         self.db.add(new_product)
         self.db.commit()
         self.db.refresh(new_product)
 
         return new_product
-    
+
     def get_product(self, company_id: int, product_id: int) -> Product | HTTPException:
-        
+
         self.check_company_id(company_id=company_id)
 
         product = (
@@ -70,11 +69,11 @@ class ProductCRUD(DatabaseCRUD):
 
         if not product:
             return not_found_exception()
-        
+
         return product
-    
+
     def put_product(self, company_id: int, product_id: int, schema: ProductUpdate) -> Product | HTTPException:
-        
+
         self.check_company_id(company_id=company_id)
 
         product = (
@@ -85,17 +84,17 @@ class ProductCRUD(DatabaseCRUD):
 
         if not product:
             return not_found_exception()
-        
+
         for key, value in schema.model_dump(exclude_unset=True).items():
             setattr(product, key, value)
-        
+
         self.db.commit()
         self.db.refresh(product)
 
         return product
-    
+
     def patch_product(self, company_id: int, product_id: int, schema: ProductUpdate) -> Product | HTTPException:
-        
+
         self.check_company_id(company_id=company_id)
 
         product = (
@@ -106,17 +105,17 @@ class ProductCRUD(DatabaseCRUD):
 
         if not product:
             return not_found_exception()
-        
+
         for key, value in schema.model_dump(exclude_unset=True).items():
             setattr(product, key, value)
-        
+
         self.db.commit()
         self.db.refresh(product)
 
         return product
-    
+
     def delete_product(self, company_id: int, product_id: int) -> None | HTTPException:
-        
+
         self.check_company_id(company_id=company_id)
 
         product = (
@@ -127,7 +126,7 @@ class ProductCRUD(DatabaseCRUD):
 
         if not product:
             return not_found_exception()
-        
+
         self.db.delete(product)
         self.db.commit()
 

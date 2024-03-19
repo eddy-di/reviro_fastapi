@@ -13,6 +13,7 @@ alembic = "^1.13.1"
 uvicorn = {extras = ["standard"], version = "^0.28.0"}
 python-dotenv = "^1.0.1"
 psycopg2-binary = "^2.9.9"
+pre-commit = "^3.6.2"
 
 
 [build-system]

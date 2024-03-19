@@ -18,7 +18,7 @@ class CompanyCRUD(DatabaseCRUD):
             .all()
         )
         return menus
-    
+
     def create_company(self, schema: CompanyCreate) -> Company:
 
         new_company = Company(
@@ -40,7 +40,7 @@ class CompanyCRUD(DatabaseCRUD):
         self.db.refresh(new_company)
 
         return new_company
-    
+
     def get_company(self, company_id: int) -> Company | HTTPException:
         company = (
             self.db.query(Company)
@@ -50,15 +50,15 @@ class CompanyCRUD(DatabaseCRUD):
 
         if not company:
             return not_found_exception()
-        
+
         return company
-    
+
     def put_company(self, company_id: int, schema: CompanyUpdate) -> Company | HTTPException:
         company = self.db.query(Company).filter(Company.id == company_id).first()
 
         if not company:
             return not_found_exception()
-        
+
         for key, value in schema.model_dump(exclude_unset=True).items():
             setattr(company, key, value)
 
@@ -66,13 +66,13 @@ class CompanyCRUD(DatabaseCRUD):
         self.db.refresh(company)
 
         return company
-    
+
     def patch_company(self, company_id: int, schema: CompanyUpdate) -> Company | HTTPException:
         company = self.db.query(Company).filter(Company.id == company_id).first()
 
         if not company:
             return not_found_exception()
-        
+
         for key, value in schema.model_dump(exclude_unset=True).items():
             setattr(company, key, value)
 
@@ -80,14 +80,14 @@ class CompanyCRUD(DatabaseCRUD):
         self.db.refresh(company)
 
         return company
-    
+
     def delete_company(self, company_id: int) -> None | HTTPException:
 
         company = self.db.query(Company).filter(Company.id == company_id).first()
 
         if not company:
             return not_found_exception()
-        
+
         self.db.delete(company)
         self.db.commit()
 

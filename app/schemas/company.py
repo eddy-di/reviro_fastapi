@@ -1,6 +1,7 @@
-from pydantic import BaseModel
 from datetime import time
 from enum import Enum
+
+from pydantic import BaseModel
 
 
 class Weekdays(int, Enum):

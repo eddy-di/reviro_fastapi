@@ -1,7 +1,17 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, DECIMAL, ForeignKey, func
+from sqlalchemy import (
+    DECIMAL,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    func,
+)
 from sqlalchemy.orm import relationship
 
 from app.config.database import Base
+
 
 class Product(Base):
     __tablename__ = 'products'
@@ -16,4 +26,4 @@ class Product(Base):
     quantity = Column(Integer, default=0)
     company_id = Column(Integer, ForeignKey('companies.id', ondelete='CASCADE'))
 
-    company = relationship("Company", back_populates="products")
+    company = relationship('Company', back_populates='products')
