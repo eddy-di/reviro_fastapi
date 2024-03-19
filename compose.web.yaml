@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    networks:
+      - reviroIntFastAPI
+    volumes:
+      - .:/app
+    ports:
+      - 8000:8000
+    env_file:
+      - .env.web
+    depends_on:
+      database_fastapi:
+        condition: service_healthy
+
+  database_fastapi:
+    image: postgres:15.1-alpine
+    networks:
+      - reviroIntFastAPI
+    volumes:
+      - reviro_psql_data:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    env_file:
+      - .env.web
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d reviroint_db -U reviroint"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  reviroIntFastAPI:
+    name: reviroIntFastAPI
+
+volumes:
+  reviro_psql_data:
+    name: reviro_psql_data

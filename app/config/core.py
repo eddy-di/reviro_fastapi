@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-API_VERSION = 'api/v1/'
+API_VERSION = '/api/v1/'
 COMPANIES_LINK = API_VERSION + 'companies'
 COMPANY_LINK = COMPANIES_LINK + '/{company_id}'
 PRODUCTS_LINK = COMPANY_LINK + '/products'
