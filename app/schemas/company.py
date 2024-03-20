@@ -4,15 +4,15 @@ from enum import Enum
 from pydantic import BaseModel
 
 
-class Weekdays(int, Enum):
-    all_week_days = 0
-    monday = 1
-    tuesday = 2
-    wednesday = 3
-    thursday = 4
-    friday = 5
-    saturday = 6
-    sunday = 7
+class Weekdays(str, Enum):
+    ALL_WEEK_DAYS = 'ALL WEEK DAYS'.lower()
+    MONDAY = 'MONDAY'.lower()
+    TUESDAY = 'TUESDAY'.lower()
+    WEDNESDAY = 'WEDNESDAY'.lower()
+    THURSDAY = 'THURSDAY'.lower()
+    FRIDAY = 'FRIDAY'.lower()
+    SATURDAY = 'SATURDAY'.lower()
+    SUNDAY = 'SUNDAY'.lower()
 
 
 class CompanyBase(BaseModel):

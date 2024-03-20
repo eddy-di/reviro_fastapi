@@ -6,7 +6,7 @@ from app.config.core import COMPANIES_LINK, COMPANY_LINK
 from app.config.database import get_db
 from app.models.company import Company
 from app.schemas.company import Company as CompanySchema
-from app.schemas.company import CompanyCreate
+from app.schemas.company import CompanyCreate, CompanyUpdate
 from app.services.api.company import CompanyService
 
 company_router = APIRouter()
@@ -32,6 +32,7 @@ def get_companies(
 @company_router.post(
     COMPANIES_LINK,
     response_model=CompanySchema,
+    status_code=201,
     tags=['Companies']
 )
 def create_company(
@@ -60,9 +61,9 @@ def get_company(
     response_model=CompanySchema,
     tags=['Companies']
 )
-def update_company(
+def put_company(
     company_id: int,
-    schema: CompanyCreate,
+    schema: CompanyUpdate,
     db: Session = Depends(get_db)
 ) -> Company | HTTPException:
     result = CompanyService(db).put_company(
@@ -79,7 +80,7 @@ def update_company(
 )
 def patch_company(
     company_id: int,
-    schema: CompanyCreate,
+    schema: CompanyUpdate,
     db: Session = Depends(get_db)
 ) -> Company | HTTPException:
     result = CompanyService(db).patch_company(

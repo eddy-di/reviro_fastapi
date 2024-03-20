@@ -59,7 +59,7 @@ class CompanyCRUD(DatabaseCRUD):
         if not company:
             return not_found_exception()
 
-        for key, value in schema.model_dump(exclude_unset=True).items():
+        for key, value in schema.model_dump().items():
             setattr(company, key, value)
 
         self.db.commit()
@@ -73,7 +73,9 @@ class CompanyCRUD(DatabaseCRUD):
         if not company:
             return not_found_exception()
 
-        for key, value in schema.model_dump(exclude_unset=True).items():
+        patch_data = schema.model_dump(exclude_unset=True)
+
+        for key, value in patch_data.items():
             setattr(company, key, value)
 
         self.db.commit()

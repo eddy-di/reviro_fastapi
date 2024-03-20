@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(dotenv_path='/home/eddy-di/Projects/reviro_fastapi/.env.test')
 
 API_VERSION = '/api/v1/'
 COMPANIES_LINK = API_VERSION + 'companies'
