@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 
 from app.models.product import Product
-from app.schemas.product import ProductCreate, ProductUpdate
+from app.schemas.product import ProductCreate, ProductPutUpdate, ProductUpdate
 from app.services.database.product import ProductCRUD
 from app.services.root import AppService
 
@@ -20,7 +20,7 @@ class ProductService(AppService):
         result = ProductCRUD(self.db).get_product(company_id=company_id, product_id=product_id)
         return result
 
-    def put_product(self, company_id: int, product_id: int, schema: ProductUpdate) -> Product | HTTPException:
+    def put_product(self, company_id: int, product_id: int, schema: ProductPutUpdate) -> Product | HTTPException:
         result = ProductCRUD(self.db).put_product(
             company_id=company_id,
             product_id=product_id,

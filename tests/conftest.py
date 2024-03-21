@@ -112,6 +112,31 @@ def create_num_of_companies():
 
 
 @pytest.fixture
+def create_num_of_products_for_one_company(create_company):
+    company = create_company
+
+    def make_num_of_products(num: int) -> list:
+        products = []
+        for _ in range(num):
+            session = TestingSessionLocal()
+            db_product_item = Product(
+                name='testProductName',
+                description='testProductDescription',
+                price='123.12',
+                discount=10,
+                quantity=20,
+                company_id=company.id
+            )
+            session.add(db_product_item)
+            session.commit()
+            session.refresh(db_product_item)
+            session.close()
+            products.append(db_product_item)
+        return products
+    return make_num_of_products
+
+
+@pytest.fixture
 def company_create_data_dict() -> dict:
     company = {
         'name': 'capito',
@@ -127,3 +152,18 @@ def company_create_data_dict() -> dict:
         'social_media3': None
     }
     return company
+
+
+@pytest.fixture
+def product_create_data_dict():
+    def make_data_dict(company_id: int) -> dict:
+        data_dict = {
+            'name': 'testProductNameFromDict',
+            'description': 'testProductDescriptionFromDict',
+            'price': '123.12',
+            'discount': 10,
+            'quantity': 20,
+            'company_id': company_id
+        }
+        return data_dict
+    return make_data_dict

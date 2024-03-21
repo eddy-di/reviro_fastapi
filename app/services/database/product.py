@@ -2,7 +2,7 @@ from fastapi import HTTPException
 
 from app.models.company import Company
 from app.models.product import Product
-from app.schemas.product import ProductCreate, ProductUpdate
+from app.schemas.product import ProductCreate, ProductPutUpdate, ProductUpdate
 from app.services.database.company import not_found_exception as no_company
 from app.services.root import DatabaseCRUD
 
@@ -72,7 +72,7 @@ class ProductCRUD(DatabaseCRUD):
 
         return product
 
-    def put_product(self, company_id: int, product_id: int, schema: ProductUpdate) -> Product | HTTPException:
+    def put_product(self, company_id: int, product_id: int, schema: ProductPutUpdate) -> Product | HTTPException:
 
         self.check_company_id(company_id=company_id)
 
@@ -106,7 +106,7 @@ class ProductCRUD(DatabaseCRUD):
         if not product:
             return not_found_exception()
 
-        for key, value in schema.model_dump(exclude_unset=True).items():
+        for key, value in schema.model_dump().items():
             setattr(product, key, value)
 
         self.db.commit()

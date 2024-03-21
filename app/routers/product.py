@@ -6,7 +6,7 @@ from app.config.core import PRODUCT_LINK, PRODUCTS_LINK
 from app.config.database import get_db
 from app.models.product import Product
 from app.schemas.product import Product as ProductSchema
-from app.schemas.product import ProductCreate
+from app.schemas.product import ProductCreate, ProductPutUpdate, ProductUpdate
 from app.services.api.product import ProductService
 
 product_router = APIRouter()
@@ -70,10 +70,10 @@ def get_product(
     response_model=ProductSchema,
     tags=['Products']
 )
-def update_product(
+def put_product(
     company_id: int,
     product_id: int,
-    schema: ProductCreate,
+    schema: ProductPutUpdate,
     db: Session = Depends(get_db)
 ) -> Product | HTTPException:
     result = ProductService(db).put_product(
@@ -92,7 +92,7 @@ def update_product(
 def patch_product(
     company_id: int,
     product_id: int,
-    schema: ProductCreate,
+    schema: ProductUpdate,
     db: Session = Depends(get_db)
 ) -> Product | HTTPException:
     result = ProductService(db).put_product(
