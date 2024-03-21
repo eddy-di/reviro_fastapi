@@ -1,21 +1,8 @@
-from enum import Enum as PyEnum
-
 from sqlalchemy import Column, Integer, String, Text, Time
 from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.orm import relationship
 
 from app.config.database import Base
-
-
-class Weekdays(PyEnum):
-    ALL_WEEK_DAYS = 'ALL WEEK DAYS'.lower()
-    MONDAY = 'MONDAY'.lower()
-    TUESDAY = 'TUESDAY'.lower()
-    WEDNESDAY = 'WEDNESDAY'.lower()
-    THURSDAY = 'THURSDAY'.lower()
-    FRIDAY = 'FRIDAY'.lower()
-    SATURDAY = 'SATURDAY'.lower()
-    SUNDAY = 'SUNDAY'.lower()
 
 
 class Company(Base):
@@ -27,8 +14,18 @@ class Company(Base):
     schedule_start = Column(Time)
     schedule_end = Column(Time)
     schedule_weekdays = Column(
-        ENUM(Weekdays),
-        default=Weekdays.ALL_WEEK_DAYS,
+        ENUM(
+            'all_week_days',
+            'monday',
+            'tuesday',
+            'wednesday',
+            'thursday',
+            'friday',
+            'saturday',
+            'sunday',
+            name='weekdays_enum'
+        ),
+        default='all week days',
         nullable=True
     )
     phone_number = Column(String)

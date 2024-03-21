@@ -5,14 +5,14 @@ from pydantic import BaseModel
 
 
 class Weekdays(str, Enum):
-    ALL_WEEK_DAYS = 'ALL WEEK DAYS'.lower()
-    MONDAY = 'MONDAY'.lower()
-    TUESDAY = 'TUESDAY'.lower()
-    WEDNESDAY = 'WEDNESDAY'.lower()
-    THURSDAY = 'THURSDAY'.lower()
-    FRIDAY = 'FRIDAY'.lower()
-    SATURDAY = 'SATURDAY'.lower()
-    SUNDAY = 'SUNDAY'.lower()
+    ALL_WEEK_DAYS = 'all_week_days',
+    MONDAY = 'monday',
+    TUESDAY = 'tuesday',
+    WEDNESDAY = 'wednesday',
+    THURSDAY = 'thursday',
+    FRIDAY = 'friday',
+    SATURDAY = 'saturday',
+    SUNDAY = 'sunday'
 
 
 class CompanyBase(BaseModel):
@@ -20,7 +20,7 @@ class CompanyBase(BaseModel):
     description: str | None
     schedule_start: time | None
     schedule_end: time | None
-    schedule_weekdays: Weekdays | None
+    schedule_weekdays: Weekdays | None = Weekdays.ALL_WEEK_DAYS
     phone_number: str | None
     email: str | None
     map_link: str | None
