@@ -20,7 +20,7 @@ services:
   test_web_fastapi:
     build: .
     container_name: test_web_fastapi
-    command: sh -c "pytest -v -rP"
+    command: sh -c "pytest -v"
     volumes:
       - .:/app
       - .:/tests
