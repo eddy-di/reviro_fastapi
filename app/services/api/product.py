@@ -42,4 +42,4 @@ class ProductService(AppService):
 
     def delete_product(self, company_id: int, product_id: int) -> JSONResponse | HTTPException:
         ProductCRUD(self.db).delete_product(company_id=company_id, product_id=product_id)
-        return JSONResponse(status_code=204, content='Product deleted.')
+        return JSONResponse(status_code=200, content='Product deleted.')

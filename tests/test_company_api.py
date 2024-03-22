@@ -164,5 +164,5 @@ def test_delete_company_specific_api(
     url = reverse(delete_company, company_id=company.id)
     response = client.delete(url)
     # then
-    assert response.status_code == 204
+    assert response.status_code == 200
     assert response.json() == 'Company deleted.'

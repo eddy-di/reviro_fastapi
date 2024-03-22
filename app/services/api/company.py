@@ -33,4 +33,4 @@ class CompanyService(AppService):
 
     def delete_company(self, company_id: int) -> JSONResponse | HTTPException:
         CompanyCRUD(self.db).delete_company(company_id=company_id)
-        return JSONResponse(status_code=204, content='Company deleted.')
+        return JSONResponse(status_code=200, content='Company deleted.')

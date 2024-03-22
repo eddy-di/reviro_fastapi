@@ -81,7 +81,7 @@ def test_post_product_list_api(
     url = reverse(create_product, company_id=company.id)
     response = client.post(url, json=post_data)
     # then
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json()['name'] == post_data['name']
     assert response.json()['description'] == post_data['description']
     assert response.json()['price'] == post_data['price']
@@ -171,5 +171,5 @@ def test_delete_specific_product(
     url = reverse(delete_product, company_id=company.id, product_id=product.id)
     response = client.delete(url)
     # then
-    assert response.status_code == 204
+    assert response.status_code == 200
     assert response.json() == 'Product deleted.'

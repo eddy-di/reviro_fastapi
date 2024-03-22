@@ -53,6 +53,7 @@ def get_products(
 @product_router.post(
     PRODUCTS_LINK,
     response_model=ProductSchema,
+    status_code=201,
     tags=['Products']
 )
 def create_product(

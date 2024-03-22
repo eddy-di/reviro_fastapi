@@ -1,0 +1,836 @@
+{
+	"info": {
+		"_postman_id": "0abdeb54-41af-44b7-bfe0-f2b3caec6c16",
+		"name": "Reviro_fastAPI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28516051",
+		"_collection_link": "https://www.postman.com/avionics-explorer-12391358/workspace/menu-api/collection/28516051-0abdeb54-41af-44b7-bfe0-f2b3caec6c16?action=share&source=collection_link&creator=28516051"
+	},
+	"item": [
+		{
+			"name": "Test Companies",
+			"item": [
+				{
+					"name": "GET - Companies",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Expecting empty results\", () => {",
+									"    const response1 = pm.response.json();",
+									"    pm.expect(response1).to.have.property('count');",
+									"    pm.expect(response1).to.have.property('results');",
+									"    pm.expect(response1).to.have.property('next_page');",
+									"    pm.expect(response1).to.have.property('prev_page');",
+									"    pm.expect(response1.count).to.equal(0);",
+									"    pm.expect(response1.next_page).to.equal(null);",
+									"    pm.expect(response1.prev_page).to.equal(null);",
+									"    console.log(response1.results);",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}api/v1/companies",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Create Company",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let date = Date.now();",
+									"let nameCompany = 'nameCompany' + date;",
+									"pm.environment.set('nameCompany', nameCompany);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set('companyId', pm.response.json().id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"  pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"testCompanyName\",\n  \"description\": \"test\",\n  \"schedule_start\": \"08:00:00\",\n  \"schedule_end\": \"00:00:00\",\n  \"schedule_weekdays\": null,\n  \"phone_number\": \"+999999999999\",\n  \"email\": \"example@gmail.com\",\n  \"map_link\": \"https://www.google.com/\",\n  \"social_media1\": \"https://www.google.com/\",\n  \"social_media2\": \"https://www.google.com/\",\n  \"social_media3\": \"https://www.google.com/\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}api/v1/companies",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Specific Company",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Expecting POST companies data to be true\", () => {",
+									"    const response2 = pm.response.json();",
+									"    const id = pm.environment.get('companyId');",
+									"    pm.expect(response2).to.have.property('name');",
+									"    pm.expect(response2).to.have.property('description');",
+									"    pm.expect(response2).to.have.property('id');",
+									"    pm.expect(response2).to.have.property('email');",
+									"    pm.expect(response2.name).to.equal('testCompanyName');",
+									"    pm.expect(response2.description).to.equal('test');",
+									"    pm.expect(response2.id).to.equal(id);",
+									"    pm.expect(response2.email).to.equal('example@gmail.com');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"updatedCompany\",\n  \"description\": \"updated\",\n  \"schedule_start\": \"08:00:00\",\n  \"schedule_end\": \"00:00:00\",\n  \"schedule_weekdays\": \"wednesday\",\n  \"phone_number\": \"+999123456789\",\n  \"email\": \"example@gmail.com\",\n  \"map_link\": \"https://www.google.com/\",\n  \"social_media1\": \"https://www.google.com/\",\n  \"social_media2\": null,\n  \"social_media3\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}api/v1/companies/{{companyId}}",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies",
+								"{{companyId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT - Update Company",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Expecting PUT company data to be true\", () => {",
+									"    const response2 = pm.response.json();",
+									"    const id = pm.environment.get('companyId');",
+									"    pm.expect(response2.id).to.equal(id);",
+									"    pm.expect(response2.name).to.equal('updatedCompany');",
+									"    pm.expect(response2.description).to.equal('updated');",
+									"    pm.expect(response2.schedule_weekdays).to.equal('wednesday');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"updatedCompany\",\n  \"description\": \"updated\",\n  \"schedule_start\": \"08:00:00\",\n  \"schedule_end\": \"00:00:00\",\n  \"schedule_weekdays\": \"wednesday\",\n  \"phone_number\": \"+999123456789\",\n  \"email\": \"example@gmail.com\",\n  \"map_link\": \"https://www.google.com/\",\n  \"social_media1\": \"https://www.google.com/\",\n  \"social_media2\": null,\n  \"social_media3\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}api/v1/companies/{{companyId}}",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies",
+								"{{companyId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH - Partial Company Update",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Expecting PATCH company data to be true\", () => {",
+									"    const response2 = pm.response.json();",
+									"    const id = pm.environment.get('companyId');",
+									"    pm.expect(response2.id).to.equal(id);",
+									"    pm.expect(response2.name).to.equal('patchedCOMPANY');",
+									"    pm.expect(response2.description).to.equal('Patched');",
+									"    pm.expect(response2.schedule_weekdays).to.equal('all_week_days');",
+									"    pm.expect(response2.schedule_start).to.equal('09:00:00');",
+									"    pm.expect(response2.schedule_end).to.equal('23:00:00');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"patchedCOMPANY\",\n  \"description\": \"Patched\",\n  \"schedule_start\": \"09:00:00\",\n  \"schedule_end\": \"23:00:00\",\n  \"schedule_weekdays\": \"all_week_days\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}api/v1/companies/{{companyId}}",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies",
+								"{{companyId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Company",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.text()).to.include('Company deleted.');",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}api/v1/companies/{{companyId}}",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies",
+								"{{companyId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test Products",
+			"item": [
+				{
+					"name": "GET - Companies",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Expecting empty results\", () => {",
+									"    const response1 = pm.response.json();",
+									"    pm.expect(response1).to.have.property('count');",
+									"    pm.expect(response1).to.have.property('results');",
+									"    pm.expect(response1).to.have.property('next_page');",
+									"    pm.expect(response1).to.have.property('prev_page');",
+									"    pm.expect(response1.count).to.equal(0);",
+									"    pm.expect(response1.next_page).to.equal(null);",
+									"    pm.expect(response1.prev_page).to.equal(null);",
+									"    console.log(response1.results);",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}api/v1/companies",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Create Company",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let date = Date.now();",
+									"let nameCompany = 'nameCompany' + date;",
+									"pm.environment.set('nameCompany', nameCompany);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set('companyId', pm.response.json().id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"  pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Test POST company2\", () => {",
+									"    const response3 = pm.response.json();",
+									"    const company2Name = pm.environment.get('nameCompany');",
+									"    pm.expect(response3.name).to.equal(company2Name);",
+									"    pm.expect(response3.description).to.equal('test');",
+									"    pm.expect(response3.schedule_start).to.equal('08:00:00');",
+									"    pm.expect(response3.schedule_end).to.equal('00:00:00');",
+									"    pm.expect(response3.schedule_weekdays).to.equal('all_week_days');",
+									"    pm.expect(response3.phone_number).to.equal('+999999999999');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{nameCompany}}\",\n  \"description\": \"test\",\n  \"schedule_start\": \"08:00:00\",\n  \"schedule_end\": \"00:00:00\",\n  \"schedule_weekdays\": null,\n  \"phone_number\": \"+999999999999\",\n  \"email\": \"example@gmail.com\",\n  \"map_link\": \"https://www.google.com/\",\n  \"social_media1\": \"https://www.google.com/\",\n  \"social_media2\": \"https://www.google.com/\",\n  \"social_media3\": \"https://www.google.com/\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}api/v1/companies",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"GET products\", () => {",
+									"    const response1 = pm.response.json();",
+									"    pm.expect(response1).to.have.property('count');",
+									"    pm.expect(response1).to.have.property('results');",
+									"    pm.expect(response1).to.have.property('next_page');",
+									"    pm.expect(response1).to.have.property('prev_page');",
+									"    pm.expect(response1.count).to.equal(0);",
+									"    pm.expect(response1.next_page).to.equal(null);",
+									"    pm.expect(response1.prev_page).to.equal(null);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}api/v1/companies/{{companyId}}/products",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies",
+								"{{companyId}}",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Products",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let date = Date.now();",
+									"let nameProduct = 'testProductName' + date;",
+									"pm.environment.set('nameProduct', nameProduct);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set('productId', pm.response.json().id);",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"  pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('POST product', () => {",
+									"    const response1Product = pm.response.json();",
+									"    const prodName = pm.environment.get('nameProduct');",
+									"    pm.expect(response1Product.name).to.be.equal(prodName);",
+									"    pm.expect(response1Product.description).to.be.equal('testProductDescription');",
+									"    pm.expect(response1Product.price).to.be.equal('123.12');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\":\"{{nameProduct}}\",\n    \"description\":\"testProductDescription\",\n    \"price\":\"123.12\",\n    \"company_id\":{{companyId}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}api/v1/companies/{{companyId}}/products",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies",
+								"{{companyId}}",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Product",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('GET product', () => {",
+									"    const response2Product = pm.response.json();",
+									"    const prodName = pm.environment.get('nameProduct');",
+									"    const prodID = pm.environment.get('productId')",
+									"    pm.expect(response2Product.name).to.be.equal(prodName);",
+									"    pm.expect(response2Product.description).to.be.equal('testProductDescription');",
+									"    pm.expect(response2Product.price).to.be.equal('123.12');",
+									"    pm.expect(response2Product.id).to.be.equal(prodID);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}api/v1/companies/{{companyId}}/products/{{productId}}",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies",
+								"{{companyId}}",
+								"products",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT - Product",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('PUT product', () => {",
+									"    const response3Product = pm.response.json();",
+									"    const prodID = pm.environment.get('productId')",
+									"    pm.expect(response3Product.name).to.be.equal('updatedTestProduct');",
+									"    pm.expect(response3Product.description).to.be.equal('updatedTestProductDescription');",
+									"    pm.expect(response3Product.price).to.be.equal('99.99');",
+									"    pm.expect(response3Product.id).to.be.equal(prodID);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\":\"updatedTestProduct\",\n    \"description\":\"updatedTestProductDescription\",\n    \"price\":\"99.99\",\n    \"company_id\":{{companyId}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}api/v1/companies/{{companyId}}/products/{{productId}}",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies",
+								"{{companyId}}",
+								"products",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH - Product",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('PATCH product', () => {",
+									"    const response4Product = pm.response.json();",
+									"    const prodID = pm.environment.get('productId')",
+									"    pm.expect(response4Product.name).to.be.equal('patchedTestProduct');",
+									"    pm.expect(response4Product.description).to.be.equal('patchedTestProductDescription');",
+									"    pm.expect(response4Product.price).to.be.equal('89.99');",
+									"    pm.expect(response4Product.id).to.be.equal(prodID);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\":\"patchedTestProduct\",\n    \"description\":\"patchedTestProductDescription\",\n    \"price\":\"89.99\",\n    \"company_id\":{{companyId}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}api/v1/companies/{{companyId}}/products/{{productId}}",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies",
+								"{{companyId}}",
+								"products",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Product",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.text()).to.include('Product deleted.');",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}api/v1/companies/{{companyId}}/products/{{productId}}",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies",
+								"{{companyId}}",
+								"products",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
