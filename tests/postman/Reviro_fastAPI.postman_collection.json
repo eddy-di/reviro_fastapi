@@ -355,6 +355,50 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "GET - Companies",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Expecting empty results\", () => {",
+									"    const response1 = pm.response.json();",
+									"    pm.expect(response1).to.have.property('count');",
+									"    pm.expect(response1).to.have.property('results');",
+									"    pm.expect(response1).to.have.property('next_page');",
+									"    pm.expect(response1).to.have.property('prev_page');",
+									"    pm.expect(response1.count).to.equal(0);",
+									"    pm.expect(response1.next_page).to.equal(null);",
+									"    pm.expect(response1.prev_page).to.equal(null);",
+									"    console.log(response1.results);",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}api/v1/companies",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -825,6 +869,150 @@
 								"{{companyId}}",
 								"products",
 								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"GET products\", () => {",
+									"    const response1 = pm.response.json();",
+									"    pm.expect(response1).to.have.property('count');",
+									"    pm.expect(response1).to.have.property('results');",
+									"    pm.expect(response1).to.have.property('next_page');",
+									"    pm.expect(response1).to.have.property('prev_page');",
+									"    pm.expect(response1.count).to.equal(0);",
+									"    pm.expect(response1.next_page).to.equal(null);",
+									"    pm.expect(response1.prev_page).to.equal(null);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}api/v1/companies/{{companyId}}/products",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies",
+								"{{companyId}}",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Company",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.text()).to.include('Company deleted.');",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}api/v1/companies/{{companyId}}",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies",
+								"{{companyId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Companies",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Expecting empty results\", () => {",
+									"    const response1 = pm.response.json();",
+									"    pm.expect(response1).to.have.property('count');",
+									"    pm.expect(response1).to.have.property('results');",
+									"    pm.expect(response1).to.have.property('next_page');",
+									"    pm.expect(response1).to.have.property('prev_page');",
+									"    pm.expect(response1.count).to.equal(0);",
+									"    pm.expect(response1.next_page).to.equal(null);",
+									"    pm.expect(response1.prev_page).to.equal(null);",
+									"    console.log(response1.results);",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}api/v1/companies",
+							"host": [
+								"{{localhost}}api"
+							],
+							"path": [
+								"v1",
+								"companies"
 							]
 						}
 					},
