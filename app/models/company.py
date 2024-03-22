@@ -25,7 +25,7 @@ class Company(Base):
             'sunday',
             name='weekdays_enum'
         ),
-        default='all week days',
+        default='all_week_days',
         nullable=True
     )
     phone_number = Column(String)
