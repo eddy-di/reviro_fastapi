@@ -36,6 +36,10 @@ class ProductCRUD(DatabaseCRUD):
 
         return products
 
+    def get_total_count(self, company_id: int) -> int:
+        total = self.db.query(Product).filter(Product.company_id == company_id).count()
+        return total
+
     def create_product(self, company_id: int, schema: ProductCreate) -> Product:
 
         self.check_company_id(company_id=company_id)

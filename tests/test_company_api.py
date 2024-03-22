@@ -19,7 +19,7 @@ def test_get_company_list_api_with_empty_companies(
     response = client.get(url)
     # then
     assert response.status_code == 200
-    assert response.json() == []
+    assert response.json()['results'] == []
 
 
 def test_get_company_list_api_with_companies(
@@ -34,7 +34,7 @@ def test_get_company_list_api_with_companies(
     response = client.get(url)
     # then
     assert response.status_code == 200
-    assert len(response.json()) == 10
+    assert len(response.json()['results']) == 10
 
 
 def test_post_company_create_api(

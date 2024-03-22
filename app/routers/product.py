@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Any
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
@@ -6,7 +8,12 @@ from app.config.core import PRODUCT_LINK, PRODUCTS_LINK
 from app.config.database import get_db
 from app.models.product import Product
 from app.schemas.product import Product as ProductSchema
-from app.schemas.product import ProductCreate, ProductPutUpdate, ProductUpdate
+from app.schemas.product import (
+    ProductCreate,
+    ProductPaginated,
+    ProductPutUpdate,
+    ProductUpdate,
+)
 from app.services.api.product import ProductService
 
 product_router = APIRouter()
@@ -14,21 +21,33 @@ product_router = APIRouter()
 
 @product_router.get(
     PRODUCTS_LINK,
-    response_model=list[ProductSchema],
+    response_model=ProductPaginated,
     tags=['Products']
 )
 def get_products(
     company_id: int,
-    skip: int = 0,
-    limit: int = 10,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1),
     db: Session = Depends(get_db)
-) -> list[Product]:
+) -> dict[str, Any]:
+    count = ProductService(db).get_total_count(company_id=company_id)
     result = ProductService(db).get_products(
         company_id=company_id,
         skip=skip,
         limit=limit
     )
-    return result
+    next_skip = skip + limit
+    prev_skip = skip - limit if skip >= limit else None
+    next_link = f'/v1/companies/{company_id}/products?skip={next_skip}&limit={limit}' if next_skip < count else None
+    prev_link = f'/v1/companies/{company_id}/products?skip={prev_skip}&limit={limit}' if prev_skip is not None else None
+    # [4:] is necessary to go through the postman automatic addition when the link is generated
+    # for production maybe it has to be changed
+    return {
+        'count': count,
+        'results': result,
+        'next_page': next_link,
+        'prev_page': prev_link
+    }
 
 
 @product_router.post(

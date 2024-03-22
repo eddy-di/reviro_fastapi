@@ -12,6 +12,9 @@ class CompanyService(AppService):
         result = CompanyCRUD(self.db).get_companies(skip=skip, limit=limit)
         return result
 
+    def get_total_count(self) -> int:
+        return CompanyCRUD(self.db).get_total_count()
+
     def create_company(self, schema: CompanyCreate) -> Company:
         result = CompanyCRUD(self.db).create_company(schema=schema)
         return result

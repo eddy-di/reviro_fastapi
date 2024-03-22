@@ -21,7 +21,7 @@ def test_get_product_list_with_empty_products(
     response = client.get(url)
     # then
     assert response.status_code == 200
-    assert response.json() == []
+    assert response.json()['results'] == []
 
 
 def test_get_product_list_with_one_product(
@@ -38,12 +38,12 @@ def test_get_product_list_with_one_product(
     response = client.get(url)
     # then
     assert response.status_code == 200
-    assert response.json()[0]['name'] == product.name
-    assert response.json()[0]['description'] == product.description
-    assert response.json()[0]['price'] == str(product.price)
-    assert response.json()[0]['discount'] == product.discount
-    assert response.json()[0]['quantity'] == product.quantity
-    assert response.json()[0]['company_id'] == product.company_id
+    assert response.json()['results'][0]['name'] == product.name
+    assert response.json()['results'][0]['description'] == product.description
+    assert response.json()['results'][0]['price'] == str(product.price)
+    assert response.json()['results'][0]['discount'] == product.discount
+    assert response.json()['results'][0]['quantity'] == product.quantity
+    assert response.json()['results'][0]['company_id'] == product.company_id
 
 
 def test_get_products_list_with_one_company_and_many_products(
@@ -59,13 +59,13 @@ def test_get_products_list_with_one_company_and_many_products(
     response = client.get(url)
     # then
     assert response.status_code == 200
-    assert len(response.json()) == 10
-    assert response.json()[0]['name'] == first_product.name
-    assert response.json()[0]['description'] == first_product.description
-    assert response.json()[0]['price'] == str(first_product.price)
-    assert response.json()[0]['discount'] == first_product.discount
-    assert response.json()[0]['quantity'] == first_product.quantity
-    assert response.json()[0]['company_id'] == first_product.company_id
+    assert len(response.json()['results']) == 10
+    assert response.json()['results'][0]['name'] == first_product.name
+    assert response.json()['results'][0]['description'] == first_product.description
+    assert response.json()['results'][0]['price'] == str(first_product.price)
+    assert response.json()['results'][0]['discount'] == first_product.discount
+    assert response.json()['results'][0]['quantity'] == first_product.quantity
+    assert response.json()['results'][0]['company_id'] == first_product.company_id
 
 
 def test_post_product_list_api(

@@ -44,3 +44,10 @@ class Product(ProductBase):
 
     class Config:
         from_attributes = True
+
+
+class ProductPaginated(BaseModel):
+    count: int
+    results: list[Product]
+    next_page: str | None = None
+    prev_page: str | None = None

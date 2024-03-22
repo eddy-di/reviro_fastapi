@@ -52,3 +52,10 @@ class Company(CompanyBase):
 
     class Config:
         from_attributes = True
+
+
+class CompanyPaginated(BaseModel):
+    count: int
+    results: list[Company]
+    next_page: str | None = None
+    prev_page: str | None = None

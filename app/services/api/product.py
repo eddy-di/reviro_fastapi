@@ -12,6 +12,10 @@ class ProductService(AppService):
         result = ProductCRUD(self.db).get_products(company_id=company_id, skip=skip, limit=limit)
         return result
 
+    def get_total_count(self, company_id: int) -> int:
+        total = ProductCRUD(self.db).get_total_count(company_id=company_id)
+        return total
+
     def create_product(self, company_id: int, schema: ProductCreate) -> Product | HTTPException:
         result = ProductCRUD(self.db).create_product(company_id=company_id, schema=schema)
         return result

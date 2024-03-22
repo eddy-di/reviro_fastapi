@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Any
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
@@ -6,7 +8,7 @@ from app.config.core import COMPANIES_LINK, COMPANY_LINK
 from app.config.database import get_db
 from app.models.company import Company
 from app.schemas.company import Company as CompanySchema
-from app.schemas.company import CompanyCreate, CompanyUpdate
+from app.schemas.company import CompanyCreate, CompanyPaginated, CompanyUpdate
 from app.services.api.company import CompanyService
 
 company_router = APIRouter()
@@ -14,19 +16,31 @@ company_router = APIRouter()
 
 @company_router.get(
     COMPANIES_LINK,
-    response_model=list[CompanySchema],
+    response_model=CompanyPaginated,
     tags=['Companies']
 )
 def get_companies(
-    skip: int = 0,
-    limit: int = 10,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1),
     db: Session = Depends(get_db)
-) -> list[Company]:
+) -> dict[str, Any]:
+    count = CompanyService(db).get_total_count()
     result = CompanyService(db).get_companies(
         skip=skip,
         limit=limit
     )
-    return result
+    next_skip = skip + limit
+    prev_skip = skip - limit if skip >= limit else None
+    next_link = f'{COMPANIES_LINK[4:]}?skip={next_skip}&limit={limit}' if next_skip < count else None
+    prev_link = f'{COMPANIES_LINK[4:]}?skip={prev_skip}&limit={limit}' if prev_skip is not None else None
+    # [4:] is necessary to go through the postman automatic addition when the link is generated
+    # for production maybe it has to be changed
+    return {
+        'count': count,
+        'results': result,
+        'next_page': next_link,
+        'prev_page': prev_link
+    }
 
 
 @company_router.post(

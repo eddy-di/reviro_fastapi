@@ -19,6 +19,10 @@ class CompanyCRUD(DatabaseCRUD):
         )
         return menus
 
+    def get_total_count(self) -> int:
+        total = self.db.query(Company).count()
+        return total
+
     def create_company(self, schema: CompanyCreate) -> Company:
 
         new_company = Company(
