@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
@@ -7,9 +7,13 @@ from sqlalchemy.orm import Session
 from app.config.core import COMPANIES_LINK, COMPANY_LINK
 from app.config.database import get_db
 from app.models.company import Company
+from app.routers.auth import get_current_user
 from app.schemas.company import Company as CompanySchema
 from app.schemas.company import CompanyCreate, CompanyPaginated, CompanyUpdate
 from app.services.api.company import CompanyService
+
+user_dependency = Annotated[dict, Depends(get_current_user)]
+
 
 company_router = APIRouter()
 
