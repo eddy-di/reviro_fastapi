@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.config.core import PRODUCT_LINK, PRODUCTS_LINK
 from app.config.database import get_db
 from app.models.product import Product
+from app.routers.auth import RoleChecker
 from app.schemas.product import Product as ProductSchema
 from app.schemas.product import (
     ProductCreate,
@@ -57,6 +58,7 @@ def get_products(
     tags=['Products']
 )
 def create_product(
+    _: Annotated[bool, Depends(RoleChecker(allowed_roles=['user']))],
     company_id: int,
     schema: ProductCreate,
     db: Session = Depends(get_db)
@@ -91,6 +93,7 @@ def get_product(
     tags=['Products']
 )
 def put_product(
+    _: Annotated[bool, Depends(RoleChecker(allowed_roles=['user']))],
     company_id: int,
     product_id: int,
     schema: ProductPutUpdate,
@@ -110,6 +113,7 @@ def put_product(
     tags=['Products']
 )
 def patch_product(
+    _: Annotated[bool, Depends(RoleChecker(allowed_roles=['user']))],
     company_id: int,
     product_id: int,
     schema: ProductUpdate,
@@ -129,6 +133,7 @@ def patch_product(
     tags=['Products']
 )
 def delete_product(
+    _: Annotated[bool, Depends(RoleChecker(allowed_roles=['user']))],
     company_id: int,
     product_id: int,
     db: Session = Depends(get_db)

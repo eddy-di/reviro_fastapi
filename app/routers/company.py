@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.config.core import COMPANIES_LINK, COMPANY_LINK
 from app.config.database import get_db
 from app.models.company import Company
-from app.routers.auth import get_current_user
+from app.routers.auth import RoleChecker, get_current_user
 from app.schemas.company import Company as CompanySchema
 from app.schemas.company import CompanyCreate, CompanyPaginated, CompanyUpdate
 from app.services.api.company import CompanyService
@@ -54,8 +54,9 @@ def get_companies(
     tags=['Companies']
 )
 def create_company(
+    _: Annotated[bool, Depends(RoleChecker(allowed_roles=['user']))],
     schema: CompanyCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ) -> Company:
     result = CompanyService(db).create_company(schema=schema)
     return result
@@ -80,6 +81,7 @@ def get_company(
     tags=['Companies']
 )
 def put_company(
+    _: Annotated[bool, Depends(RoleChecker(allowed_roles=['user']))],
     company_id: int,
     schema: CompanyUpdate,
     db: Session = Depends(get_db)
@@ -97,6 +99,7 @@ def put_company(
     tags=['Companies']
 )
 def patch_company(
+    _: Annotated[bool, Depends(RoleChecker(allowed_roles=['user']))],
     company_id: int,
     schema: CompanyUpdate,
     db: Session = Depends(get_db)
@@ -114,6 +117,7 @@ def patch_company(
     tags=['Companies']
 )
 def delete_company(
+    _: Annotated[bool, Depends(RoleChecker(allowed_roles=['user']))],
     company_id: int,
     db: Session = Depends(get_db)
 ) -> JSONResponse | HTTPException:

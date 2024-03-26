@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 from fastapi import Depends, HTTPException
@@ -6,11 +6,17 @@ from fastapi.routing import APIRouter
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
-from app.config.core import ALGORITHM, REGISTER_LINK, SECRET_KEY, TOKEN_LINK
+from app.config.core import (  # REFRESH_LINK,
+    ALGORITHM,
+    REGISTER_LINK,
+    SECRET_KEY,
+    TOKEN_LINK,
+)
 from app.config.database import get_db
-from app.models.user import User
+from app.models.user import RefreshTokens, User
 from app.schemas.auth import CreateUserRequest, Token
 
 auth = APIRouter(
@@ -52,12 +58,65 @@ def obtain_token(
     if not user:
         raise HTTPException(status_code=401, detail='Could not validate user.')
 
-    token = create_access_token(user.username, user.id, timedelta(days=1))
+    access_token = create_token(user.username, user.id, user.role, timedelta(hours=1))
+    refresh_token = create_token(user.username, user.id, user.role, timedelta(days=1))
 
     return {
-        'access_token': token,
+        'access_token': access_token,
+        'refresh_token': refresh_token,
         'token_type': 'bearer'
     }
+
+
+# @auth.post(
+#     REFRESH_LINK,
+#     response_model=Token
+# )
+# def refresh_access_token(
+#     db: db_dependency,
+#     token_data: Annotated[str, Depends()]
+# ):
+#     token = token_data
+
+#     return {
+#         'access_token': access_token,
+#         'refresh_token': refresh_token,
+#         'token_type': 'bearer'
+#     }
+
+
+def store_refresh_token(db: Session, token: str, expires_at: datetime):
+    refresh_token = RefreshTokens(token=token, expires_at=expires_at)
+    db.add(refresh_token)
+    db.commit()
+
+
+def delete_expired_refresh_tokens(db: Session):
+    # Delete expired refresh tokens from the database
+    now = datetime.now(timezone.utc)
+    db.query(RefreshTokens).filter(RefreshTokens.expires_at < now).delete()
+    db.commit()
+
+
+def validate_refresh_token(token: Annotated[str, Depends(oauth2_bearer)], db: db_dependency):
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail='Could not validate credentials.'
+    )
+    try:
+        db_token = db.query(RefreshTokens).filter(RefreshTokens.token == token).first()
+        if db_token:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            username: str = payload.get('sub')
+            role: str = payload('role')
+            if username is None or role is None:
+                raise credentials_exception
+            user = db.query(User).filter(User.username == username).first()
+            return user
+        else:
+            raise credentials_exception
+    except (JWTError, ValidationError):
+        raise credentials_exception
 
 
 def authenticate_user(username: str, password: str, db):
@@ -69,9 +128,9 @@ def authenticate_user(username: str, password: str, db):
     return user
 
 
-def create_access_token(username: str, user_id: int, expires_delta: timedelta):
-    encode = {'sub': username, 'id': user_id}
-    expires = datetime.now() + expires_delta
+def create_token(username: str, user_id: int, role: str, expires_delta: timedelta):
+    encode = {'sub': username, 'id': user_id, 'role': role}
+    expires = datetime.now(timezone.utc) + expires_delta
     encode.update({'exp': expires})
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 
@@ -86,3 +145,16 @@ def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         return {'username': username, 'id': user_id}
     except JWTError:
         raise HTTPException(status_code=401, detail='Could not validate user.')
+
+
+class RoleChecker:
+    def __init__(self, allowed_roles):
+        self.allowed_roles = allowed_roles
+
+    def __call__(self, user: Annotated[User, Depends(get_current_user)]):
+        if user.role in self.allowed_roles:
+            return True
+        raise HTTPException(
+            status_code=401,
+            detail='You don\'t have enough permission.'
+        )
