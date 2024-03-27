@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytest
 from fastapi.testclient import TestClient
+from passlib.context import CryptContext
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -10,6 +11,10 @@ from app.config.database import Base, get_db
 from app.main import app
 from app.models.company import Company
 from app.models.product import Product
+from app.models.user import User
+from app.routers.auth import create_token
+
+hash_password = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 engine = create_engine(database_url)
 
@@ -37,6 +42,46 @@ def api_client():
     try:
         Base.metadata.create_all(bind=engine)
         client = TestClient(app)
+        yield client
+    finally:
+        Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture
+def create_user():
+    def _create_user(
+        username: str = 'test.user',
+        password: str = 'superStrongPassword123',
+        role: str = 'user'
+    ):
+        # hashed_password = hash_password.hash(password)
+        user = User(
+            username=username,
+            hashed_password=password,
+            role=role
+        )
+        session = TestingSessionLocal()
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+        session.close()
+        return user
+    return _create_user
+
+
+@pytest.fixture
+def authenticated_api_client(create_user):
+    try:
+        Base.metadata.create_all(bind=engine)
+        user = create_user()
+        token = create_token(
+            username=user.username,
+            user_id=user.id,
+            role='user',
+            expires_delta=timedelta(minutes=5)
+        )
+        headers = {'Authorization': f'Bearer {token}'}
+        client = TestClient(app=app, headers=headers)
         yield client
     finally:
         Base.metadata.drop_all(bind=engine)

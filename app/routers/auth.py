@@ -68,23 +68,6 @@ def obtain_token(
     }
 
 
-# @auth.post(
-#     REFRESH_LINK,
-#     response_model=Token
-# )
-# def refresh_access_token(
-#     db: db_dependency,
-#     token_data: Annotated[str, Depends()]
-# ):
-#     token = token_data
-
-#     return {
-#         'access_token': access_token,
-#         'refresh_token': refresh_token,
-#         'token_type': 'bearer'
-#     }
-
-
 def store_refresh_token(db: Session, token: str, expires_at: datetime):
     refresh_token = RefreshTokens(token=token, expires_at=expires_at)
     db.add(refresh_token)
@@ -135,14 +118,15 @@ def create_token(username: str, user_id: int, role: str, expires_delta: timedelt
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
+def get_current_user(token: Annotated[str, Depends(oauth2_bearer)], db: db_dependency):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get('sub')
         user_id: int = payload.get('id')
         if username is None or user_id is None:
             raise HTTPException(status_code=401, detail='Could not validate user.')
-        return {'username': username, 'id': user_id}
+        user = db.query(User).filter(User.username == username).first()
+        return user
     except JWTError:
         raise HTTPException(status_code=401, detail='Could not validate user.')
 

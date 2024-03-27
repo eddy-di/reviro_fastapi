@@ -68,13 +68,30 @@ def test_get_products_list_with_one_company_and_many_products(
     assert response.json()['results'][0]['company_id'] == first_product.company_id
 
 
-def test_post_product_list_api(
+def test_post_product_list_api_unauth_client(
     api_client,
     create_company,
     product_create_data_dict
 ):
     # given
     client = api_client
+    company = create_company
+    post_data = product_create_data_dict(company.id)
+    # when
+    url = reverse(create_product, company_id=company.id)
+    response = client.post(url, json=post_data)
+    # then
+    assert response.status_code == 401
+    assert response.json()['detail'] == 'Not authenticated'
+
+
+def test_post_product_list_api(
+    authenticated_api_client,
+    create_company,
+    product_create_data_dict
+):
+    # given
+    client = authenticated_api_client
     company = create_company
     post_data = product_create_data_dict(company.id)
     # when
@@ -112,13 +129,34 @@ def test_get_specific_product(
     assert response.json()['company_id'] == product.company_id
 
 
-def test_patch_specific_product(
+def test_patch_specific_product_unauth_client(
     api_client,
     create_product,
     create_company
 ):
     # given
     client = api_client
+    company = create_company
+    product = create_product(company.id)
+    patch_data = {
+        'name': 'patchedName',
+        'description': 'patchedDescription'
+    }
+    # when
+    url = reverse(patch_product, company_id=product.company_id, product_id=product.id)
+    response = client.patch(url, json=patch_data)
+    # then
+    assert response.status_code == 401
+    assert response.json()['detail'] == 'Not authenticated'
+
+
+def test_patch_specific_product(
+    authenticated_api_client,
+    create_product,
+    create_company
+):
+    # given
+    client = authenticated_api_client
     company = create_company
     product = create_product(company.id)
     patch_data = {
@@ -137,7 +175,7 @@ def test_patch_specific_product(
     assert response.json()['quantity'] == product.quantity
 
 
-def test_put_specific_product(
+def test_put_specific_product_unauth_client(
     api_client,
     create_product,
     create_company
@@ -155,16 +193,59 @@ def test_put_specific_product(
     url = reverse(put_product, company_id=company.id, product_id=product.id)
     response = client.put(url, json=put_data)
     # then
+    # assert response.status_code == 200
+    assert response.status_code == 401
+    assert response.json()['detail'] == 'Not authenticated'
+
+
+def test_put_specific_product(
+    authenticated_api_client,
+    create_product,
+    create_company
+):
+    # given
+    client = authenticated_api_client
+    company = create_company
+    product = create_product(company.id)
+    put_data = {
+        'name': 'updatePutName',
+        'description': 'updatePutDescription',
+        'price': '999.99'
+    }
+    # when
+    url = reverse(put_product, company_id=company.id, product_id=product.id)
+    response = client.put(url, json=put_data)
+    # then
     assert response.status_code == 200
+    assert response.json()['name'] == put_data['name']
+    assert response.json()['description'] == put_data['description']
+    assert response.json()['price'] == put_data['price']
 
 
-def test_delete_specific_product(
+def test_delete_specific_product_unauth_client(
     api_client,
     create_product,
     create_company
 ):
     # given
     client = api_client
+    company = create_company
+    product = create_product(company.id)
+    # when
+    url = reverse(delete_product, company_id=company.id, product_id=product.id)
+    response = client.delete(url)
+    # then
+    assert response.status_code == 401
+    assert response.json()['detail'] == 'Not authenticated'
+
+
+def test_delete_specific_product(
+    authenticated_api_client,
+    create_product,
+    create_company
+):
+    # given
+    client = authenticated_api_client
     company = create_company
     product = create_product(company.id)
     # when

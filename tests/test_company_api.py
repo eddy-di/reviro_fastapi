@@ -37,12 +37,27 @@ def test_get_company_list_api_with_companies(
     assert len(response.json()['results']) == 10
 
 
-def test_post_company_create_api(
+def test_post_company_create_api_unauth_client(
     api_client,
     company_create_data_dict
 ):
     # given
     client = api_client
+    post_data = company_create_data_dict
+    # when
+    url = reverse(create_company)
+    response = client.post(url, json=post_data)
+    # then
+    assert response.status_code == 401
+    assert response.json()['detail'] == 'Not authenticated'
+
+
+def test_post_company_create_api(
+    authenticated_api_client,
+    company_create_data_dict
+):
+    # given
+    client = authenticated_api_client
     post_data = company_create_data_dict
     # when
     url = reverse(create_company)
@@ -97,12 +112,39 @@ def test_get_company_specific_api_for_existent_company(
     assert response.json()['social_media3'] == company.social_media3
 
 
-def test_put_company_specific_api(
+def test_put_company_specific_api_unauth_client(
     api_client,
     create_company
 ):
     # given
     client = api_client
+    company = create_company
+    # when
+    put_data = {
+        'name': 'patchedCompanyName',
+        'description': 'patchedCompanyDescription',
+        'schedule_start': '09:00:00',
+        'schedule_end': '00:00:00',
+        'phone_number': '+996123456789',
+        'email': 'put.example@mail.com',
+        'map_link': 'https://2gis.kg',
+        'social_media1': 'https://www.instagram.com/',
+        'social_media2': 'https://www.tiktok.com/en/',
+        'social_media3': 'https://www.facebook.com/'
+    }
+    url = reverse(put_company, company_id=company.id)
+    response = client.put(url, json=put_data)
+    # then
+    assert response.status_code == 401
+    assert response.json()['detail'] == 'Not authenticated'
+
+
+def test_put_company_specific_api(
+    authenticated_api_client,
+    create_company
+):
+    # given
+    client = authenticated_api_client
     company = create_company
     # when
     put_data = {
@@ -133,7 +175,7 @@ def test_put_company_specific_api(
     assert response.json()['social_media3'] == put_data['social_media3']
 
 
-def test_patch_company_specific_api(
+def test_patch_company_specific_api_unauth_client(
     api_client,
     create_company
 ):
@@ -148,17 +190,51 @@ def test_patch_company_specific_api(
     url = reverse(patch_company, company_id=company.id)
     response = client.patch(url, json=patch_data)
     # then
+    assert response.status_code == 401
+    assert response.json()['detail'] == 'Not authenticated'
+
+
+def test_patch_company_specific_api(
+    authenticated_api_client,
+    create_company
+):
+    # given
+    client = authenticated_api_client
+    company = create_company
+    patch_data = {
+        'name': 'patchedCompanyName',
+        'description': 'patchedCompanyDescription'
+    }
+    # when
+    url = reverse(patch_company, company_id=company.id)
+    response = client.patch(url, json=patch_data)
+    # then
     assert response.status_code == 200
     assert response.json()['name'] == patch_data['name']
     assert response.json()['description'] == patch_data['description']
 
 
-def test_delete_company_specific_api(
+def test_delete_company_specific_api_unauth_client(
     api_client,
     create_company
 ):
     # given
     client = api_client
+    company = create_company
+    # when
+    url = reverse(delete_company, company_id=company.id)
+    response = client.delete(url)
+    # then
+    assert response.status_code == 401
+    assert response.json()['detail'] == 'Not authenticated'
+
+
+def test_delete_company_specific_api(
+    authenticated_api_client,
+    create_company
+):
+    # given
+    client = authenticated_api_client
     company = create_company
     # when
     url = reverse(delete_company, company_id=company.id)
