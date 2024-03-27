@@ -7,6 +7,18 @@ class CreateUserRequest(BaseModel):
     role: str | None = 'user'
 
 
+class RegisterSuccess(BaseModel):
+    message: str
+    id: int
+    username: str
+    role: str
+
+
+class Login(BaseModel):
+    username: str
+    password: str
+
+
 class Token(BaseModel):
     access_token: str
     refresh_token: str

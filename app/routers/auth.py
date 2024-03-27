@@ -3,21 +3,16 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException
 from fastapi.routing import APIRouter
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
-from app.config.core import (  # REFRESH_LINK,
-    ALGORITHM,
-    REGISTER_LINK,
-    SECRET_KEY,
-    TOKEN_LINK,
-)
+from app.config.core import ALGORITHM, REGISTER_LINK, SECRET_KEY, TOKEN_LINK
 from app.config.database import get_db
 from app.models.user import RefreshTokens, User
-from app.schemas.auth import CreateUserRequest, Token
+from app.schemas.auth import CreateUserRequest, Login, RegisterSuccess, Token
 
 auth = APIRouter(
     tags=['Auth']
@@ -32,7 +27,8 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 @auth.post(
     REGISTER_LINK,
-    status_code=201
+    status_code=201,
+    response_model=RegisterSuccess
 )
 def register(
     db: db_dependency,
@@ -44,6 +40,13 @@ def register(
     )
     db.add(create_user)
     db.commit()
+    db.refresh(create_user)
+    return {
+        'message': 'New user created.',
+        'id': create_user.id,
+        'username': create_user.username,
+        'role': create_user.role
+    }
 
 
 @auth.post(
@@ -52,9 +55,10 @@ def register(
 )
 def obtain_token(
     db: db_dependency,
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+    login_form: Login,
 ):
-    user = authenticate_user(form_data.username, form_data.password, db)
+    validate_data = login_form
+    user = authenticate_user(validate_data.username, validate_data.password, db)
     if not user:
         raise HTTPException(status_code=401, detail='Could not validate user.')
 
