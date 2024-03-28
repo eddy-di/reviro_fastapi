@@ -2,6 +2,7 @@ from fastapi import Depends, FastAPI
 
 from app.config.database import Base, engine, get_db
 
+from .routers.auth import auth
 from .routers.company import company_router
 from .routers.product import product_router
 
@@ -33,3 +34,4 @@ app = FastAPI(
 
 app.include_router(company_router)
 app.include_router(product_router)
+app.include_router(auth)
